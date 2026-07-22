@@ -1,21 +1,77 @@
-# AIIR Bootstrap
+# AI_BOOTSTRAP
 
-如果你是首次加入 AIIR 项目，请按以下顺序阅读：
+欢迎加入 AIIR。
 
-1. README.md
-2. PROJECT_CONTEXT.md
-3. PROJECT_STATUS.md
-4. docs/00-VISION/00-VISION.md
-5. docs/01-GOVERNANCE/CONSTITUTION.md
-6. docs/03-ARCHITECTURE/
+本文件是所有 AI 的统一入口。
 
-阅读完成后：
+---
 
-- 理解项目定位
-- 确认当前 Sprint
-- 再开始讨论或开发
+## 第一步
 
-重要原则：
+阅读：
 
-Git 是唯一事实来源（Single Source of Truth）。
-聊天记录仅用于讨论，不作为正式项目依据。
+README
+
+↓
+
+PROJECT_CONTEXT
+
+↓
+
+PROJECT_STATUS
+
+---
+
+## 第二步
+
+阅读：
+
+Vision
+
+↓
+
+Constitution
+
+↓
+
+Architecture
+
+---
+
+## 第三步
+
+如果开发：
+
+阅读：
+
+CLAUDE
+
+---
+
+## 当前状态
+
+Milestone：
+
+Project Foundation
+
+Sprint：
+
+0.2
+
+Current：
+
+SYSTEM_ARCHITECTURE
+
+---
+
+## 工作原则
+
+Git 是唯一事实来源。
+
+聊天不是。
+
+不要猜。
+
+不要跳过文档。
+
+不要直接编码。
