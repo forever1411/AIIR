@@ -25,8 +25,9 @@
 
 如果进入代码开发，还必须阅读：
 
-7. `CLAUDE.md`
-8. 当前功能对应的 PRD、Task、ADR 和验收文档
+7. `DEVELOPMENT_AGENT.md`
+8. 当前工具的兼容入口（如 `AGENTS.md` 或 `CLAUDE.md`，仅用于自动发现）
+9. 当前功能对应的 PRD、Task、ADR 和验收文档
 
 ---
 
@@ -56,3 +57,13 @@
 - 动态状态只维护在 `PROJECT_STATUS.md`。
 - 稳定背景只维护在 `PROJECT_CONTEXT.md`。
 - 所有输出应遵循 Evidence First、Human Decision 和 Deterministic Before Generative。
+
+---
+
+## 四、本地编程工具独立性
+
+- 项目必须使用能够在 Ubuntu 本地仓库中读取文件、修改代码并执行命令的编程工具或代理。
+- 当前可选择 Codex、Claude Code 或其他满足能力与安全要求的工具。
+- `DEVELOPMENT_AGENT.md` 是工具无关的统一开发规则源。
+- `AGENTS.md`、`CLAUDE.md` 等文件只作为对应工具的自动发现入口，不得形成相互冲突的规则副本。
+- 更换本地编程工具不属于产品架构变更；但工具引入新的权限、联网、沙箱或密钥风险时，必须记录并评审。

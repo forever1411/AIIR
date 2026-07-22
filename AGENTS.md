@@ -1,6 +1,6 @@
-# CLAUDE.md
+# AGENTS.md
 
-> Claude Code compatibility entrypoint for AIIR.
+> AIIR 的 Codex 与通用本地编程代理入口。
 
 开始任何代码开发任务前：
 
@@ -8,4 +8,4 @@
 2. 再完整阅读并遵守 `DEVELOPMENT_AGENT.md`；
 3. 按当前 Task 读取相关 Architecture、ADR、PRD、测试和现有代码。
 
-`DEVELOPMENT_AGENT.md` 是唯一正式开发规则源。本文件仅保留用于 Claude Code 自动发现，不包含 Claude 专属项目规则。
+`DEVELOPMENT_AGENT.md` 是唯一正式开发规则源。本文件只用于工具自动发现，不复制规则。

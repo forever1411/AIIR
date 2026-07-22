@@ -123,9 +123,8 @@ AIIR 不会：
 - PostgreSQL
 - Redis
 - Docker
-- Claude Code
-- ChatGPT
-- Google Gemini
+- 本地编程代理（Codex、Claude Code 或其他已批准工具）
+- 大模型服务（Provider 待技术方案确认）
 
 具体方案以 `TECH_STACK.md` 为准。
 
@@ -137,6 +136,8 @@ AIIR 不会：
 |------|------|
 | PROJECT_CONTEXT.md | AI 项目上下文 |
 | PROJECT_STATUS.md | 当前项目状态 |
+| DEVELOPMENT_AGENT.md | 工具无关的本地开发规则 |
+| AGENTS.md / CLAUDE.md | 编程工具自动发现兼容入口 |
 | docs/00-VISION | 项目愿景 |
 | docs/01-GOVERNANCE | 项目治理 |
 | docs/02-ROADMAP | 产品路线图 |

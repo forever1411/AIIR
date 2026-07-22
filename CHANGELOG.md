@@ -10,6 +10,9 @@
 
 ### Added
 
+* 新增工具无关的 `DEVELOPMENT_AGENT.md` 作为本地开发规则唯一来源；
+* 新增 `AGENTS.md` 作为 Codex 与通用 Agent 自动发现入口；
+* 将 `CLAUDE.md` 缩减为 Claude Code 兼容入口，避免维护厂商专属规则副本；
 * 规划统一的 LLM Gateway；
 * 规划模型 Provider Adapter 接口；
 * 规划 Research Workflow Engine；
@@ -31,7 +34,7 @@
 * 明确 Evidence 与 Citation 是 AIIR 核心架构能力；
 * 调整系统架构设计优先级，当前工作重点由普通 Roadmap 编写转向总体架构与 LLM 架构；
 * 更新建议源码结构，新增 `workflows`、`llm`、`evidence`、`knowledge` 和 `evaluation` 等模块；
-* 更新 `CLAUDE.md`，增加大模型接入、Prompt、密钥、安全和模型输出治理规则；
+* 将本地开发规则迁移到工具无关的 `DEVELOPMENT_AGENT.md`，并增加 `AGENTS.md` 与 `CLAUDE.md` 兼容入口；
 * 更新 `PROJECT_STATUS.md`，记录新的架构认识和后续计划。
 
 ### Deprecated
@@ -76,8 +79,8 @@ AIIR 项目正式建立，完成首批项目基础和治理文档。
 
 新增：
 
-* `CLAUDE.md`；
-* ChatGPT、Claude Code 和 Product Owner 的协作分工；
+* 初始本地编程代理规则文件；
+* Product Owner、Chief Architect 和本地编程代理的协作分工；
 * 文档驱动开发工作流；
 * 架构评审与最终验收流程。
 
@@ -133,4 +136,3 @@ AIIR 的目标是：
 * MVP 模型 Provider 策略；
 * V0.1 MVP 范围冻结；
 * 第一份 PRD 与开发 Task。
-
