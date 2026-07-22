@@ -1,296 +1,545 @@
 # AIIR 项目状态（PROJECT_STATUS）
 
 > **Project：** AIIR（AI Investment Research）
->
 > **Version：** v0.1
->
 > **Status：** Active
->
 > **Owner：** Product Owner
->
 > **Last Updated：** 2026-07-22
 
 ---
 
-# 一、项目总体状态
+## 一、项目总体状态
 
-| 项目 | 当前状态 |
-|------|----------|
-| 项目阶段 | 🟡 Milestone 0：Project Foundation |
-| 当前 Sprint | Sprint 0.2 |
-| 当前状态 | 🟢 正常进行 |
-| 总体完成度 | 15% |
-
----
-
-# 二、项目定位
-
-AIIR 是一个专业投资研究平台（AI Investment Research Platform）。
-
-项目目标：
-
-帮助普通投资者建立专业投资机构级别的研究能力。
-
-AIIR 不负责替用户做投资决策。
-
-AIIR 负责帮助用户提升投资认知和决策能力。
+| 项目        | 当前状态                           |
+| --------- | ------------------------------ |
+| 项目阶段      | Milestone 0：Project Foundation |
+| 当前 Sprint | Sprint 0.2：System Architecture |
+| 项目状态      | 正常进行                           |
+| 当前重点      | 总体架构与大模型能力架构设计                 |
+| 总体完成度     | 约 20%                          |
+| 业务代码状态    | 尚未开始                           |
 
 ---
 
-# 三、当前 Milestone
+## 二、项目定位
 
-## Milestone 0：Project Foundation（项目奠基）
+AIIR 是一个以 AI 为核心的专业投资研究平台（AI Investment Research Platform）。
 
-目标：
+AIIR 通过以下能力协同工作：
 
-建立整个 AIIR 项目的产品体系、文档体系、开发规范和总体架构。
+1. 数据采集与处理；
+2. 投资知识与长期记忆；
+3. 结构化研究工作流；
+4. 大模型理解与推理；
+5. 证据引用与结果验证；
+6. 用户讨论与决策支持。
 
-当前状态：
-
-🟡 进行中
-
----
-
-# 四、当前 Sprint
-
-## Sprint 0.2
-
-当前目标：
-
-进入系统架构设计阶段。
-
-重点完成：
-
-- Roadmap
-- System Architecture
-- Tech Stack
-- Agent Architecture
+AIIR 的目标不是替用户完成投资，而是帮助用户建立更加专业、全面和理性的投资研究能力，持续提升投资认知，辅助用户实现长期、稳健的资产保值增值。
 
 ---
 
-# 五、当前完成情况
+## 三、AIIR 的系统本质
 
-## 已完成（Done）
+AIIR 不是单纯的信息采集程序，也不是单纯的大模型聊天工具。
 
-### 项目基础
+AIIR 的完整能力由以下部分共同组成：
 
-- [x] AIIR 项目正式命名
-- [x] GitHub 仓库建立
-- [x] 项目目录结构建立
+```text
+AIIR
+=
+数据采集系统
++
+数据处理与计算系统
++
+投资知识与记忆系统
++
+研究工作流系统
++
+大模型推理系统
++
+证据与验证系统
++
+用户决策支持系统
+```
 
----
+其中：
 
-### 项目治理
-
-- [x] PROJECT_CONTEXT.md
-- [x] PROJECT_STATUS.md
-- [x] README.md
-- [x] CHATGPT.md
-- [x] CLAUDE.md
-
----
-
-### 产品设计
-
-- [x] 00-VISION.md
-- [x] CONSTITUTION.md
-
----
-
-## 正在进行（Doing）
-
-- [ ] ROADMAP.md
-
----
-
-## 待开始（Todo）
-
-- [ ] SYSTEM_ARCHITECTURE.md
-- [ ] TECH_STACK.md
-- [ ] AGENT_ARCHITECTURE.md
-- [ ] DATA_SOURCE.md
-- [ ] MEMORY_ARCHITECTURE.md
+* 普通程序负责数据采集、清洗、存储、计算、校验和调度；
+* 大模型负责文本理解、知识关联、风险识别、逻辑分析和研究讨论；
+* 知识库负责保存专业知识、历史研究和长期上下文；
+* Evidence 层负责把结论与来源、事实和证据绑定；
+* 用户负责最终投资决策。
 
 ---
 
-# 六、当前重要决策
+## 四、当前 Milestone
 
-当前已经确定：
+### Milestone 0：Project Foundation
 
-✅ AIIR 定位为：
+**目标：**
 
-Professional Investment Research Platform
+建立 AIIR 的产品基础、治理体系、架构体系、技术原则和 MVP 开发依据。
 
----
+**当前状态：**
 
-✅ AIIR 不负责：
+进行中。
 
-- 自动交易
-- 自动下单
-- 股票推荐
-- 保证收益
+**完成条件：**
 
----
-
-✅ AIIR 核心理念：
-
-帮助用户建立专业投资研究能力。
-
-而不是替用户完成投资。
-
----
-
-✅ 开发模式：
-
-Design First
-
-Documentation First
-
-Architecture Driven
+* 项目愿景明确；
+* 项目边界明确；
+* 项目治理原则明确；
+* 总体系统架构确定；
+* LLM 架构确定；
+* 数据与 Evidence 架构确定；
+* 技术栈确定；
+* MVP 范围冻结；
+* 第一份 PRD 和 Task 可以交付 Claude Code。
 
 ---
 
-# 七、项目文档状态
+## 五、当前 Sprint
 
-| 文档 | 状态 |
-|------|------|
-| README | ✅ 完成 |
-| PROJECT_CONTEXT | ✅ 完成 |
-| PROJECT_STATUS | ✅ 当前文档 |
-| Vision | ✅ 完成 |
-| Constitution | ✅ 完成 |
-| Roadmap | 🟡 编写中 |
-| Architecture | ⏳ 未开始 |
-| Tech Stack | ⏳ 未开始 |
-| Agent Design | ⏳ 未开始 |
+### Sprint 0.2：System Architecture
 
----
+**当前目标：**
 
-# 八、开发环境
+明确 AIIR 作为“数据、知识、工作流与大模型协作系统”的总体架构。
 
-开发平台：
+**本 Sprint 重点：**
 
-Ubuntu 24.04
-
-AI：
-
-- Claude Code
-- ChatGPT
-- Google Gemini
-
-版本管理：
-
-Git
-
-GitHub
+* 完成 `SYSTEM_ARCHITECTURE.md`；
+* 完成 `LLM_ARCHITECTURE.md`；
+* 完成 `RESEARCH_WORKFLOW_ARCHITECTURE.md`；
+* 完成 `EVIDENCE_ARCHITECTURE.md`；
+* 明确确定性程序与生成式模型的职责边界；
+* 明确 MVP 的模型接入原则；
+* 为后续技术选型提供依据。
 
 ---
 
-# 九、当前风险
+## 六、已完成事项
 
-## 风险一
+### 6.1 项目基础
 
-需求不断扩张。
+* [x] AIIR 项目正式命名；
+* [x] GitHub 仓库建立；
+* [x] 项目基础目录建立；
+* [x] Git 版本管理初始化。
 
-解决方案：
+### 6.2 项目定位与治理
 
-严格按照 Roadmap 演进。
+* [x] 明确 AIIR 的产品定位；
+* [x] 明确 AIIR 的长期目标；
+* [x] 明确用户拥有最终决策权；
+* [x] 明确 AIIR 不进行自动交易和自动下单；
+* [x] 建立文档驱动开发原则；
+* [x] 建立 Git 作为唯一事实来源的原则。
 
----
+### 6.3 已完成文档
 
-## 风险二
+* [x] `README.md`；
+* [x] `PROJECT_CONTEXT.md`；
+* [x] `PROJECT_STATUS.md`；
+* [x] `CHANGELOG.md`；
+* [x] `CLAUDE.md`；
+* [x] `00-VISION.md`；
+* [x] `CONSTITUTION.md`。
 
-上下文丢失。
+### 6.4 新形成的架构认识
 
-解决方案：
-
-所有正式知识必须进入 Git。
-
-聊天记录不得作为事实来源。
-
----
-
-## 风险三
-
-过早进入编码。
-
-解决方案：
-
-完成架构设计后，再进入开发。
-
----
-
-# 十、下一阶段计划
-
-按优先级：
-
-1. 完成 ROADMAP.md
-
-2. 完成 SYSTEM_ARCHITECTURE.md
-
-3. 完成 TECH_STACK.md
-
-4. 完成 AGENT_ARCHITECTURE.md
-
-5. 输出第一份 PRD
-
-6. Claude Code 开始 MVP 开发
+* [x] 明确 AIIR 的分析与解读能力需要依赖大模型；
+* [x] 明确 AIIR 必须建立统一的 LLM Gateway；
+* [x] 明确业务模块不得直接绑定单一模型厂商；
+* [x] 明确模型 Provider 采用统一 Adapter 接口；
+* [x] 明确 MVP 只实现一个模型 Provider；
+* [x] 明确多模型路由不进入首个 MVP；
+* [x] 明确数值计算、公式计算和数据校验必须由确定性程序完成；
+* [x] 明确 Prompt 不应硬编码在业务代码中；
+* [x] 明确模型输出必须经过结构化校验；
+* [x] 明确需要建立 Evidence 与 LLM Evaluation 能力。
 
 ---
 
-# 十一、项目工作流
+## 七、正在进行
+
+* [ ] 编写 `SYSTEM_ARCHITECTURE.md`；
+* [ ] 确定 AIIR 核心模块及边界；
+* [ ] 设计 LLM Gateway；
+* [ ] 设计 Research Workflow；
+* [ ] 设计 Evidence 与 Citation 机制。
+
+---
+
+## 八、待完成事项
+
+### 8.1 架构文档
+
+* [ ] `SYSTEM_ARCHITECTURE.md`；
+* [ ] `LLM_ARCHITECTURE.md`；
+* [ ] `RESEARCH_WORKFLOW_ARCHITECTURE.md`；
+* [ ] `EVIDENCE_ARCHITECTURE.md`；
+* [ ] `AGENT_ARCHITECTURE.md`；
+* [ ] `MEMORY_ARCHITECTURE.md`；
+* [ ] `DATA_ARCHITECTURE.md`。
+
+### 8.2 技术设计
+
+* [ ] `TECH_STACK.md`；
+* [ ] `MODEL_PROVIDER_STRATEGY.md`；
+* [ ] `DEVELOPMENT_ENVIRONMENT.md`；
+* [ ] `PROMPT_ARCHITECTURE.md`；
+* [ ] `LLM_EVALUATION_STRATEGY.md`；
+* [ ] `TEST_STRATEGY.md`。
+
+### 8.3 产品规划
+
+* [ ] `ROADMAP.md`；
+* [ ] 冻结 AIIR V0.1 MVP 范围；
+* [ ] 输出第一份 PRD；
+* [ ] 输出第一份开发 Task；
+* [ ] 交付 Claude Code 开始开发。
+
+---
+
+## 九、当前重要决策
+
+### 决策一：AIIR 是研究系统，不是交易系统
+
+AIIR 不进行：
+
+* 自动买入；
+* 自动卖出；
+* 自动下单；
+* 无人监督的交易执行；
+* 收益承诺。
+
+### 决策二：用户拥有最终决策权
+
+AIIR 提供：
+
+* 信息；
+* 证据；
+* 知识；
+* 分析；
+* 推理；
+* 讨论；
+* 决策支持。
+
+最终决策始终由用户完成。
+
+### 决策三：引入统一 LLM Gateway
+
+所有大模型调用必须经过统一 LLM Gateway。
+
+上层业务模块不得直接调用：
+
+* OpenAI SDK；
+* Anthropic SDK；
+* Gemini SDK；
+* 其他模型厂商 SDK。
+
+### 决策四：Provider Adapter
+
+每个模型厂商通过统一 Provider 接口接入。
+
+首个 MVP 只实现一个 Provider，但架构必须允许后续增加：
+
+* OpenAI Provider；
+* Anthropic Provider；
+* Gemini Provider；
+* Local Model Provider；
+* 其他兼容 Provider。
+
+### 决策五：确定性程序优先
+
+以下任务必须由普通程序完成：
+
+* 财务指标计算；
+* 公式计算；
+* 数据格式校验；
+* 时间排序；
+* 去重；
+* 来源记录；
+* 结构化解析；
+* 权限控制；
+* 任务调度。
+
+不得让大模型猜测可以准确计算或验证的结果。
+
+### 决策六：Evidence First
+
+重要结论必须关联：
+
+* 来源；
+* 原始事实；
+* 发布时间；
+* 获取时间；
+* 证据强度；
+* 事实、推断或观点类型。
+
+### 决策七：Prompt 外置与版本化
+
+Prompt 不得散落或硬编码在业务代码中。
+
+运行时 Prompt 应集中存放、版本管理并接受测试。
+
+### 决策八：LLM 输出需要治理
+
+模型输出必须经过：
+
+* Schema 校验；
+* 来源检查；
+* 证据覆盖检查；
+* 幻觉风险检查；
+* 不确定性标记；
+* 必要时的第二次复核。
+
+---
+
+## 十、MVP 当前约束
+
+AIIR V0.1 计划只实现一个最小闭环：
+
+```text
+输入一个股票标识
+        ↓
+采集有限的可靠数据
+        ↓
+清洗、去重和结构化
+        ↓
+调用一个 LLM Provider
+        ↓
+生成结构化分析
+        ↓
+绑定来源和证据
+        ↓
+输出 Markdown 研究报告
+```
+
+V0.1 暂不实现：
+
+* 多模型投票；
+* 自动模型路由；
+* 大规模多 Agent 协作；
+* 自动交易；
+* 知识图谱；
+* 模型微调；
+* 复杂 Web Dashboard；
+* 大规模实时行情系统；
+* 本地模型集群。
+
+---
+
+## 十一、当前文档状态
+
+| 文档                         | 状态             |
+| -------------------------- | -------------- |
+| `README.md`                | 已完成，后续按架构更新    |
+| `PROJECT_CONTEXT.md`       | 已完成，需补充系统构成    |
+| `PROJECT_STATUS.md`        | 当前文档           |
+| `CHANGELOG.md`             | 已更新            |
+| `CLAUDE.md`                | 已更新 LLM 开发规则   |
+| `00-VISION.md`             | 已完成            |
+| `CONSTITUTION.md`          | 已完成，后续补充模型独立原则 |
+| `ROADMAP.md`               | 未开始            |
+| `SYSTEM_ARCHITECTURE.md`   | 即将开始           |
+| `LLM_ARCHITECTURE.md`      | 未开始            |
+| `TECH_STACK.md`            | 未开始            |
+| `AGENT_ARCHITECTURE.md`    | 未开始            |
+| `EVIDENCE_ARCHITECTURE.md` | 未开始            |
+
+---
+
+## 十二、当前建议源码结构
+
+```text
+src/
+└── aiir/
+    ├── api/
+    ├── application/
+    ├── domain/
+    ├── workflows/
+    ├── agents/
+    ├── llm/
+    │   ├── providers/
+    │   ├── routing/
+    │   ├── schemas/
+    │   └── evaluation/
+    ├── data_sources/
+    ├── ingestion/
+    ├── processing/
+    ├── knowledge/
+    ├── evidence/
+    ├── reports/
+    ├── storage/
+    ├── scheduler/
+    ├── observability/
+    └── core/
+```
+
+该结构目前属于架构候选，需在 `SYSTEM_ARCHITECTURE.md` 中正式确认后再作为编码依据。
+
+---
+
+## 十三、开发环境
+
+| 项目              | 当前配置                              |
+| --------------- | --------------------------------- |
+| 操作系统            | Ubuntu 24.04                      |
+| 开发执行            | Claude Code                       |
+| 产品与架构设计         | ChatGPT                           |
+| 辅助模型            | Google Gemini                     |
+| 版本管理            | Git + GitHub                      |
+| 后端语言            | 待 `TECH_STACK.md` 确认              |
+| MVP 模型 Provider | 待 `MODEL_PROVIDER_STRATEGY.md` 确认 |
+
+---
+
+## 十四、当前风险
+
+### 风险一：过早实施多模型系统
+
+**风险：**
+
+同时接入多个模型会显著增加接口、测试、成本、路由和异常处理复杂度。
+
+**应对：**
+
+MVP 只实现一个 Provider，保留统一接口。
+
+### 风险二：把大模型当作计算器或数据库
+
+**风险：**
+
+可能导致数字错误、引用错误和事实幻觉。
+
+**应对：**
+
+确定性任务由代码完成，模型只负责理解与推理。
+
+### 风险三：模型厂商锁定
+
+**风险：**
+
+业务代码直接依赖单一 SDK，未来切换成本过高。
+
+**应对：**
+
+所有模型调用统一经过 LLM Gateway 和 Provider Adapter。
+
+### 风险四：输出看似专业但缺少证据
+
+**风险：**
+
+系统退化为普通财经聊天机器人。
+
+**应对：**
+
+Evidence、Citation、Schema Validation 和 Evaluation 作为核心架构能力。
+
+### 风险五：需求持续扩张
+
+**风险：**
+
+项目长期停留在设计阶段，无法形成可用闭环。
+
+**应对：**
+
+总体架构确定后立即冻结 V0.1 MVP，只实现最小闭环。
+
+### 风险六：上下文与项目事实丢失
+
+**风险：**
+
+不同 AI 或新对话无法准确恢复状态。
+
+**应对：**
+
+所有正式信息进入 Git；动态状态及时更新到本文件。
+
+---
+
+## 十五、下一步计划
+
+按顺序执行：
+
+1. 完成 `SYSTEM_ARCHITECTURE.md`；
+2. 完成 `LLM_ARCHITECTURE.md`；
+3. 完成 `RESEARCH_WORKFLOW_ARCHITECTURE.md`；
+4. 完成 `EVIDENCE_ARCHITECTURE.md`；
+5. 完成 `ROADMAP.md`；
+6. 完成 `TECH_STACK.md`；
+7. 确定首个 MVP 的模型 Provider；
+8. 冻结 V0.1 MVP；
+9. 输出 PRD；
+10. 输出 Task；
+11. Claude Code 开始编码与测试。
+
+---
+
+## 十六、标准工作流
 
 任何功能开发必须遵循：
 
+```text
 Idea
-
-↓
-
+  ↓
 Architecture Discussion
-
-↓
-
+  ↓
 PRD
-
-↓
-
+  ↓
 Task
-
-↓
-
-Claude Code
-
-↓
-
-Review
-
-↓
-
+  ↓
+Claude Code Implementation
+  ↓
+Claude Code Self Review
+  ↓
+ChatGPT Architecture and Quality Review
+  ↓
+Product Owner Final Acceptance
+  ↓
 Merge
+```
+
+重大技术决策需要建立 ADR。
 
 ---
 
-# 十二、项目原则
+## 十七、项目原则
 
-当前 AIIR 坚持：
+AIIR 当前坚持：
 
-- Design First
-- Documentation First
-- Evidence First
-- Human Decision
-- Git is the Source of Truth
+* Design First；
+* Documentation First；
+* Evidence First；
+* Human Decision；
+* Deterministic Before Generative；
+* Model Independence；
+* Structured Output；
+* Git is the Source of Truth；
+* Keep It Simple；
+* No Premature Overengineering。
 
 ---
 
-# 十三、备注
+## 十八、维护规则
 
-PROJECT_STATUS.md 属于动态文档。
+`PROJECT_STATUS.md` 是动态文档。
 
-每完成一个 Sprint 或 Milestone，必须更新。
+以下情况发生时必须更新：
 
-所有 AI 在开始工作前，应优先阅读：
+1. 当前 Sprint 发生变化；
+2. 当前 Milestone 发生变化；
+3. 完成核心文档；
+4. 形成重大产品或架构决策；
+5. 开始新的主要开发任务；
+6. MVP 范围发生变化；
+7. 项目出现新的风险或阻塞。
 
-1. PROJECT_CONTEXT.md
-2. PROJECT_STATUS.md
+任何 AI 开始工作前，应首先阅读：
 
-确认当前项目状态后，再开始工作。
+1. `PROJECT_CONTEXT.md`；
+2. `PROJECT_STATUS.md`；
+3. 与当前任务相关的正式文档。
+
