@@ -1,66 +1,39 @@
-# AI_BOOTSTRAP
+# AIIR Bootstrap
 
-> **Purpose：** AIIR 的统一 AI 启动入口
-> **Last Updated：** 2026-07-22
+本文件用于让新的 AI 会话、本地编程代理或人工协作者快速恢复项目上下文。
 
-## 1. 先恢复事实
-
-所有 AI 或本地编程代理开始工作前，按顺序阅读：
+## Required reading order
 
 1. `README.md`
-2. `PROJECT_CONTEXT.md`
-3. `PROJECT_STATUS.md`
-4. `docs/00-VISION/00-VISION.md`
-5. `docs/01-GOVERNANCE/CONSTITUTION.md`
-6. 与当前任务直接相关的文档
+2. `PROJECT_STATUS.md`
+3. `docs/VISION.md`
+4. `docs/PRINCIPLES.md`
+5. `docs/PILOT.md`
+6. 与当前任务相关的 `docs/WORKFLOWS.md` 或 `docs/EVALUATION.md`
+7. 涉及仓库修改时再读 `DEVELOPMENT_AGENT.md`
 
-动态状态只信任 `PROJECT_STATUS.md`。聊天记录、模型记忆和旧 Patch 都不是项目事实来源。
+动态进度只以 `PROJECT_STATUS.md` 为准。不要从 README、历史 Changelog 或旧对话推断当前 Sprint。
 
-## 2. 先判断任务类型
+## Current project truth
 
-### 投资学习或研究任务
+- AIIR 当前是个人投资学习与决策流程，不是已获准实施的软件平台。
+- 成熟大模型是分析引擎，不是竞争对象。
+- 当前任务是验证实际增益，而不是补齐预想中的技术架构。
+- 项目负责人投资经验有限，系统必须主动生成问题并解释过程。
+- 模型不能被包装为拥有真实几十年投资经验的权威。
+- 最终决定属于项目负责人。
 
-继续阅读：
+## Before changing the repository
 
-- `docs/01-GOVERNANCE/INVESTMENT_SAFETY.md`
-- `docs/04-PRODUCT/AIIR_V0_SPEC.md`
-- `docs/09-WORKFLOWS/` 下相关流程
-- `prompts/system/personal_investment_coach.md`
+确认：
 
-### 项目设计任务
+- 变更是否服务当前试点；
+- 是否有真实使用证据；
+- 是否可以通过修改 Prompt、模板或工作流解决；
+- 是否引入了无内容目录、占位文件或提前抽象；
+- 是否影响个人隐私和投资安全；
+- 是否同步更新 `PROJECT_STATUS.md`。
 
-继续阅读：
+## Default behavior
 
-- `docs/02-ROADMAP/ROADMAP.md`
-- `docs/03-ARCHITECTURE/SYSTEM_ARCHITECTURE.md`
-- 相关 ADR
-
-### 代码开发任务
-
-只有 `PROJECT_STATUS.md` 明确允许进入软件开发时，才继续阅读：
-
-- `DEVELOPMENT_AGENT.md`
-- `AGENTS.md` 或当前工具兼容入口
-- 对应 PRD、Task、ADR 和验收标准
-
-## 3. 当前最高优先级规则
-
-- 不默认写代码；
-- 不把“可以开发”误认为“应该开发”；
-- 先使用成熟模型和简单文件验证需求；
-- 用户不知道该问什么时，主动生成研究问题；
-- 投资相关输出必须区分事实、推断、未知和行动选项；
-- 风险、期限和个人约束优先于收益想象；
-- 不以权威专家身份要求用户服从；
-- 不将私密财务数据写入公开文档或 Git；
-- 不将每条新闻转化为交易建议；
-- 不允许模型执行自动交易。
-
-## 4. 修改项目时
-
-- 只修改完成当前目标所必需的内容；
-- 重大方向变化必须写 ADR；
-- 新增功能前必须引用真实 friction 记录；
-- 文档状态和实际文件必须一致；
-- 任何模型、框架和本地编程工具都必须可替换；
-- 完成后更新 `PROJECT_STATUS.md` 和 `CHANGELOG.md`。
+当任务不明确时，优先保持仓库简单，不创建代码、框架、数据库或部署结构。提出并记录最小可验证步骤。

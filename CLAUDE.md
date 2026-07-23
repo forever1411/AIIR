@@ -1,12 +1,11 @@
 # CLAUDE.md
 
-Claude Code compatibility entrypoint for AIIR.
+Claude Code 兼容入口。
 
-开始任务前：
+开始任何仓库工作前读取：
 
-1. 阅读 `AI_BOOTSTRAP.md`；
-2. 从 `PROJECT_STATUS.md` 确认当前是否允许开发；
-3. 如果允许开发，完整阅读 `DEVELOPMENT_AGENT.md`；
-4. 读取当前任务关联的 PRD、Task、ADR、架构和测试标准。
+1. `AI_BOOTSTRAP.md`
+2. `DEVELOPMENT_AGENT.md`
+3. `PROJECT_STATUS.md`
 
-`DEVELOPMENT_AGENT.md` 是唯一正式开发规则源。本文件只用于 Claude Code 自动发现。
+项目规则与工具无关，唯一正式规则源是 `DEVELOPMENT_AGENT.md`。

@@ -1,47 +1,41 @@
-# Secrets
+# AIIR private workspace
+workspace/
+private/
+
+# Secrets and local configuration
 .env
 .env.*
 !.env.example
 *.pem
 *.key
+*.p12
+*.pfx
 
-# Python
+# Local databases and generated artifacts
+*.db
+*.sqlite
+*.sqlite3
+*.log
+reports/
+exports/
+cache/
+.tmp/
+tmp/
+
+# Python tooling (only if software is introduced later)
 __pycache__/
 *.py[cod]
 .pytest_cache/
-.ruff_cache/
 .mypy_cache/
+.ruff_cache/
 .venv/
 venv/
 dist/
 build/
 *.egg-info/
 
-# Editors and OS
+# Editors and operating systems
 .vscode/
 .idea/
 .DS_Store
-
-# AIIR private personal data
-workspace/private/
-data/private/
-reports/private/
-logs/private/
-*.private.md
-*.private.csv
-*.local.md
-*.local.csv
-portfolio.csv
-investment_profile.md
-decision_journal.md
-friction_log.md
-
-# Runtime data
-*.sqlite
-*.sqlite3
-*.db
-logs/*.log
-
-# Keep public examples and templates tracked
-!data/templates/
-!data/templates/**
+Thumbs.db
