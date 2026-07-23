@@ -1,69 +1,66 @@
 # AI_BOOTSTRAP
 
-> **Status：** Active
-> **Owner：** Product Owner
+> **Purpose：** AIIR 的统一 AI 启动入口
 > **Last Updated：** 2026-07-22
 
-欢迎加入 AIIR。
+## 1. 先恢复事实
 
-本文件是所有 AI 的统一入口，只定义启动顺序与工作规则。
-
-项目的动态状态、当前 Sprint 和下一步任务，统一以 `PROJECT_STATUS.md` 为准，避免多个文档同时维护相同状态。
-
----
-
-## 一、启动阅读顺序
-
-按以下顺序阅读：
+所有 AI 或本地编程代理开始工作前，按顺序阅读：
 
 1. `README.md`
 2. `PROJECT_CONTEXT.md`
 3. `PROJECT_STATUS.md`
-4. `docs/00-VISION/` 下的愿景文档
+4. `docs/00-VISION/00-VISION.md`
 5. `docs/01-GOVERNANCE/CONSTITUTION.md`
-6. `docs/03-ARCHITECTURE/` 下与当前任务相关的架构文档
+6. 与当前任务直接相关的文档
 
-如果进入代码开发，还必须阅读：
+动态状态只信任 `PROJECT_STATUS.md`。聊天记录、模型记忆和旧 Patch 都不是项目事实来源。
 
-7. `DEVELOPMENT_AGENT.md`
-8. 当前工具的兼容入口（如 `AGENTS.md` 或 `CLAUDE.md`，仅用于自动发现）
-9. 当前功能对应的 PRD、Task、ADR 和验收文档
+## 2. 先判断任务类型
 
----
+### 投资学习或研究任务
 
-## 二、状态恢复规则
+继续阅读：
 
-开始任何工作前，必须从 `PROJECT_STATUS.md` 恢复以下信息：
+- `docs/01-GOVERNANCE/INVESTMENT_SAFETY.md`
+- `docs/04-PRODUCT/AIIR_V0_SPEC.md`
+- `docs/09-WORKFLOWS/` 下相关流程
+- `prompts/system/personal_investment_coach.md`
 
-- 当前 Milestone；
-- 当前 Sprint；
-- 当前重点；
-- 已完成事项；
-- 正在进行事项；
-- 下一步计划；
-- 当前风险与约束。
+### 项目设计任务
 
-不得根据聊天记录、记忆或旧文档猜测当前状态。
+继续阅读：
 
----
+- `docs/02-ROADMAP/ROADMAP.md`
+- `docs/03-ARCHITECTURE/SYSTEM_ARCHITECTURE.md`
+- 相关 ADR
 
-## 三、工作原则
+### 代码开发任务
 
-- Git 是唯一正式事实来源，聊天不是。
-- 不猜测缺失的项目事实。
-- 不跳过治理、架构和任务文档。
-- 未完成必要设计前，不直接编码。
-- 重大架构变化必须形成 ADR。
-- 动态状态只维护在 `PROJECT_STATUS.md`。
-- 稳定背景只维护在 `PROJECT_CONTEXT.md`。
-- 所有输出应遵循 Evidence First、Human Decision 和 Deterministic Before Generative。
+只有 `PROJECT_STATUS.md` 明确允许进入软件开发时，才继续阅读：
 
----
+- `DEVELOPMENT_AGENT.md`
+- `AGENTS.md` 或当前工具兼容入口
+- 对应 PRD、Task、ADR 和验收标准
 
-## 四、本地编程工具独立性
+## 3. 当前最高优先级规则
 
-- 项目必须使用能够在 Ubuntu 本地仓库中读取文件、修改代码并执行命令的编程工具或代理。
-- 当前可选择 Codex、Claude Code 或其他满足能力与安全要求的工具。
-- `DEVELOPMENT_AGENT.md` 是工具无关的统一开发规则源。
-- `AGENTS.md`、`CLAUDE.md` 等文件只作为对应工具的自动发现入口，不得形成相互冲突的规则副本。
-- 更换本地编程工具不属于产品架构变更；但工具引入新的权限、联网、沙箱或密钥风险时，必须记录并评审。
+- 不默认写代码；
+- 不把“可以开发”误认为“应该开发”；
+- 先使用成熟模型和简单文件验证需求；
+- 用户不知道该问什么时，主动生成研究问题；
+- 投资相关输出必须区分事实、推断、未知和行动选项；
+- 风险、期限和个人约束优先于收益想象；
+- 不以权威专家身份要求用户服从；
+- 不将私密财务数据写入公开文档或 Git；
+- 不将每条新闻转化为交易建议；
+- 不允许模型执行自动交易。
+
+## 4. 修改项目时
+
+- 只修改完成当前目标所必需的内容；
+- 重大方向变化必须写 ADR；
+- 新增功能前必须引用真实 friction 记录；
+- 文档状态和实际文件必须一致；
+- 任何模型、框架和本地编程工具都必须可替换；
+- 完成后更新 `PROJECT_STATUS.md` 和 `CHANGELOG.md`。

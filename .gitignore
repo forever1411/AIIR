@@ -1,0 +1,47 @@
+# Secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.venv/
+venv/
+dist/
+build/
+*.egg-info/
+
+# Editors and OS
+.vscode/
+.idea/
+.DS_Store
+
+# AIIR private personal data
+workspace/private/
+data/private/
+reports/private/
+logs/private/
+*.private.md
+*.private.csv
+*.local.md
+*.local.csv
+portfolio.csv
+investment_profile.md
+decision_journal.md
+friction_log.md
+
+# Runtime data
+*.sqlite
+*.sqlite3
+*.db
+logs/*.log
+
+# Keep public examples and templates tracked
+!data/templates/
+!data/templates/**
