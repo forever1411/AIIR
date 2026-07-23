@@ -1,3 +1,0 @@
-as_of,asset_id,asset_name,asset_type,market,currency,quantity,cost_basis,market_value,source,verified_at,notes
-2026-01-01,EXAMPLE_CASH,Cash,cash,bank,USD,1,10000,10000,manual,2026-01-01,fictional example
-2026-01-01,EXAMPLE_FUND,Diversified Fund,fund,example,USD,10,100,1050,manual,2026-01-01,fictional example

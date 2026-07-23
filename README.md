@@ -2,97 +2,124 @@
 
 **AIIR — AI Investment Reflection**
 
-AIIR 是一个面向项目负责人个人使用的投资学习与决策系统。它当前不是独立投资软件，也不试图比 ChatGPT、Claude、Gemini 等成熟大模型更聪明。
+AIIR 是一个由 GitHub 驱动、由成熟大模型运行的个人投资学习、研究与决策辅助系统。
 
-AIIR 的当前做法是：先把成熟大模型组织成一套可靠、低摩擦、可复盘的个人投资流程，再通过真实使用判断哪些重复问题值得软件化。
-
-## AIIR 解决什么问题
-
-项目负责人目前投资经验有限，真正的困难通常不是“模型不会回答”，而是：
-
-- 不知道应该从哪里开始；
-- 不知道应该问什么；
-- 不知道应该查哪些可靠资料；
-- 难以判断事实、推断和营销话术；
-- 不知道做决定前还缺什么；
-- 容易受到价格波动、确认偏误和情绪影响；
-- 很难保存并复盘当时为什么做出决定。
-
-AIIR 应主动生成研究问题、解释资料、检查风险、记录决定并支持复盘，而不是要求用户先成为专业投资者。
-
-## 当前形态：ChatGPT-first Pilot
-
-当前版本由以下内容组成：
+它不是准备开发的软件应用，也不是一个试图超越 ChatGPT、Claude、Gemini 或未来模型的独立 AI。AIIR 将模型已经具备的检索、解释、推理和对话能力，与一套由用户长期拥有、可版本化、可审计的个人上下文结合起来。
 
 ```text
-ChatGPT Project 或其他成熟大模型工作区
-+ AIIR 教练 Prompt
-+ 私有个人资料模板
-+ 标准工作流
-+ 对照评估与摩擦日志
+GitHub 仓库
+= AIIR 的长期记忆、当前状态、规则和历史
+
+成熟大模型
+= AIIR 的研究、解释、推理、质疑和交互能力
 ```
 
-仓库当前不包含应用代码、数据库、部署配置或提前搭建的工程骨架。只有在真实使用证明存在稳定且值得自动化的缺口后，才创建对应的软件设计与代码目录。
+## 为什么存在
 
-## 立即开始
+用户目前投资经验有限。真正的困难不只是缺少答案，还包括：
 
-1. 阅读 [项目愿景](docs/VISION.md) 和 [原则与安全边界](docs/PRINCIPLES.md)。
-2. 按 [试点说明](docs/PILOT.md) 创建一个 ChatGPT Project。
-3. 将 [`prompts/personal_investment_coach.md`](prompts/personal_investment_coach.md) 设为项目指令。
-4. 将 [`templates/`](templates/) 中的示例复制到本地私有目录并填写真实信息。
-5. 按 [标准工作流](docs/WORKFLOWS.md) 完成真实研究、决策或复盘。
-6. 用 [评估规则](docs/EVALUATION.md) 比较 AIIR 流程与直接聊天的差异。
+- 不知道从哪里开始；
+- 不知道应该问什么；
+- 不知道应该看哪些资料；
+- 不知道哪些信息重要、哪些只是噪声；
+- 难以判断事实、推断和营销话术；
+- 不知道做决定前还缺什么；
+- 容易受到价格波动、情绪和确认偏误影响；
+- 很难保存并复盘过去为什么做过某个决定。
 
-## 当前成功标准
+AIIR 的职责是主动帮助用户发现问题、建立研究路径、理解资料、检查风险、形成可复盘记录，并在后续会话中恢复这些上下文。
 
-AIIR 不以短期收益或“回答听起来多专业”作为成功标准。当前阶段只验证：
+## 最小运行闭环
 
-- 是否帮助用户提出原本不知道该问的问题；
-- 是否更容易找到并理解可靠来源；
-- 是否更清楚地暴露未知、风险和反方证据；
-- 是否减少重复整理上下文；
-- 是否提高决策记录和事后复盘质量；
-- 是否相对直接使用成熟大模型产生可观察的实际增益。
+```text
+启动
+→ 读取系统内核
+→ 恢复当前状态与长期记忆
+→ 根据本次请求工作
+→ 识别值得固化的新信息
+→ 必要时与用户确认
+→ 输出仓库更新或 patch
+→ 用户提交 Git
+→ 下次继续
+```
 
-## 安全边界
+GitHub 是唯一正式事实来源。聊天记忆、旧对话和模型自行推测都不能替代仓库中的已确认内容。
 
-AIIR：
+## 如何开始一次会话
 
-- 不承诺收益或资本保值；
-- 不把模型语言能力等同于真实投资经验；
-- 不替用户作最终决定；
-- 不自动下单或连接券商；
-- 不把每条新闻和价格波动转化为交易信号；
-- 在高风险、税务、法律或复杂产品场景中建议寻求合格专业人士复核。
+向支持读取 GitHub 仓库的成熟大模型发送：
+
+```text
+继续 AIIR。
+
+GitHub：
+https://github.com/forever1411/AIIR.git
+
+请先阅读 AI_BOOTSTRAP.md。
+```
+
+模型应按照启动协议恢复身份、规则、状态和记忆，然后直接继续当前工作。
+
+## 如何结束一次会话
+
+用户不需要手工整理本次对话。模型应主动识别可能需要长期保存的内容，并：
+
+1. 区分当前状态、长期记忆和历史记录；
+2. 对不确定或可能误解的个人信息向用户确认；
+3. 给出建议修改的文件；
+4. 在确认后输出完整内容或标准 patch；
+5. 不声称远程仓库已更新，除非确实完成了提交。
+
+用户也可以直接说：
+
+```text
+收尾 AIIR，检查本次需要固化的信息并给我 patch。
+```
 
 ## 仓库结构
 
 ```text
 AIIR/
 ├── README.md
-├── PROJECT_STATUS.md
 ├── AI_BOOTSTRAP.md
-├── DEVELOPMENT_AGENT.md
-├── docs/
-│   ├── VISION.md
-│   ├── PRINCIPLES.md
-│   ├── PILOT.md
-│   ├── WORKFLOWS.md
-│   └── EVALUATION.md
-├── prompts/
-│   ├── personal_investment_coach.md
-│   ├── company_research.md
-│   ├── asset_allocation_discussion.md
-│   ├── news_impact.md
-│   └── decision_review.md
-└── templates/
-    ├── README.md
-    ├── investment_profile.example.md
-    ├── portfolio.example.csv
-    ├── watchlist.example.csv
-    ├── investment_rules.example.md
-    ├── decision_journal.example.md
-    └── friction_log.example.md
+├── CURRENT_STATE.md
+├── MEMORY.md
+├── JOURNAL.md
+├── CHANGELOG.md
+└── docs/
+    ├── VISION.md
+    ├── CHATGPT_ROLE.md
+    ├── PRINCIPLES.md
+    └── INTERACTION_PROTOCOL.md
 ```
 
-仓库保持小而真实。未来目录在真正产生内容时再创建，不使用 `.gitkeep` 预占结构。
+### 稳定系统内核
+
+- [`docs/VISION.md`](docs/VISION.md)：AIIR 为什么存在、希望实现什么。
+- [`docs/CHATGPT_ROLE.md`](docs/CHATGPT_ROLE.md)：成熟大模型在 AIIR 中应扮演什么角色。
+- [`docs/PRINCIPLES.md`](docs/PRINCIPLES.md)：长期有效、不能轻易违反的原则。
+- [`docs/INTERACTION_PROTOCOL.md`](docs/INTERACTION_PROTOCOL.md)：启动、运行、确认和保存协议。
+
+### 动态运行数据
+
+- [`CURRENT_STATE.md`](CURRENT_STATE.md)：当前有效的工作状态和下一步。
+- [`MEMORY.md`](MEMORY.md)：经过确认、未来仍会影响协作的长期信息。
+- [`JOURNAL.md`](JOURNAL.md)：按时间追加的重要讨论、决定和演进记录。
+
+### 维护记录
+
+- [`CHANGELOG.md`](CHANGELOG.md)：仓库结构和正式协议的变化，不记录普通会话流水。
+
+## 当前边界
+
+AIIR 当前：
+
+- 不开发独立本地程序；
+- 不自建基础模型；
+- 不自动交易或连接券商；
+- 不承诺收益、保值或确定结果；
+- 不把模型的专业表达等同于真实经验；
+- 不要求用户先学会提出专业问题；
+- 不提前创建没有真实内容的目录、模板和体系。
+
+新的文件或目录只在第一次产生真实需求和真实内容时创建。
