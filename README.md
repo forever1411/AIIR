@@ -108,6 +108,9 @@ AIIR/
 │   ├── CURRENT.md
 │   └── snapshots/
 │       └── 2026-07-23.md
+├── integrations/
+│   └── feishu-codex/
+│       └── README.md
 └── docs/
     ├── VISION.md
     ├── AIIR_ASSISTANT_ROLE.md
@@ -140,6 +143,7 @@ AIIR/
 ### 系统维护
 
 - [`CHANGELOG.md`](CHANGELOG.md)：仓库结构和正式协议的变更记录。
+- [`integrations/feishu-codex/`](integrations/feishu-codex/)：飞书手机端与本机 Codex app-server 的私有双向桥接及主动通知入口。
 
 ## 边界
 

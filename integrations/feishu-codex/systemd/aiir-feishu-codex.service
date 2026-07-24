@@ -1,0 +1,16 @@
+[Unit]
+Description=AIIR Feishu to Codex bridge
+After=network-online.target aiir-codex-app-server.service
+Wants=network-online.target
+Requires=aiir-codex-app-server.service
+
+[Service]
+Type=simple
+WorkingDirectory=@REPO_ROOT@/integrations/feishu-codex
+EnvironmentFile=@ENV_FILE@
+ExecStart=@NODE_BIN@ @REPO_ROOT@/integrations/feishu-codex/src/main.mjs
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=default.target

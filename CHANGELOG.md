@@ -2,6 +2,15 @@
 
 本文件只记录会改变仓库结构、AIIR 身份或正式运行协议的变更。普通投资讨论和个人决定记录在 `JOURNAL.md` 或后续按需创建的专题文件中。
 
+## 2026-07-24 — Feishu remote Codex bridge
+
+- 新增 `integrations/feishu-codex/`，通过飞书长连接与本机 Codex app-server 提供手机双向交互和主动通知入口。
+- 凭证保存在仓库外的本机私密配置中，并以配对码和飞书用户身份限制访问。
+- 普通消息逐轮使用只读权限；只有显式 `/aiir write` 才为当前一轮开放 AIIR 工作区写权限，下一轮自动恢复只读。
+- 飞书入口不开放全磁盘权限、Git commit/push、交易操作或交互式审批。
+- 提供 systemd 用户服务、一键配置、健康诊断、终端接回同一 thread、主动通知、协议测试与依赖审计。
+- 明确关闭普通 Codex 窗口不会停止桥接；同一机器可通过本机状态恢复，换新机器则必须重新配置私密连接。
+
 ## 2026-07-24 — Multi-Agent portfolio monitoring protocol
 
 - 新增 `docs/PORTFOLIO_MONITORING_PROTOCOL.md`，定义持续市场与持仓监控的启动恢复、Agent 分工、默认节奏、报告门槛、证据标准、行动边界和迭代方法。

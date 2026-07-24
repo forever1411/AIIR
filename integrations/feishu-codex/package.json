@@ -1,0 +1,20 @@
+{
+  "name": "aiir-feishu-codex-bridge",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "A private Feishu bridge for a local AIIR Codex app-server.",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "check": "node --check src/*.mjs",
+    "start": "node src/main.mjs",
+    "notify": "node src/notify.mjs",
+    "test": "node --test"
+  },
+  "dependencies": {
+    "@larksuiteoapi/node-sdk": "1.71.1",
+    "ws": "8.21.1"
+  }
+}
