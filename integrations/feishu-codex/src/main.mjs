@@ -67,7 +67,7 @@ async function enforceChatPolicy(message, command) {
 }
 
 function terminalCommand() {
-  return `codex resume ${session.threadId} --remote ${config.appServerUrl}`;
+  return `codex --ask-for-approval never --sandbox workspace-write resume ${session.threadId} --remote ${config.appServerUrl}`;
 }
 
 async function reply(message, text) {

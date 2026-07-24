@@ -1,15 +1,32 @@
 import { safeErrorMessage } from "./safe-log.mjs";
 
-const REMOTE_INSTRUCTIONS = `
-本 turn 来自用户本人的飞书手机端，是 AIIR 的远程讨论入口。
+export const SHARED_THREAD_INSTRUCTIONS = `
+本 thread 由受信任的本机 Codex 终端和飞书桥共同使用。
+不要仅根据历史消息推断当前 turn 的来源或权限；应以当前 turn 的环境权限和 application context 为准。
+始终遵循仓库中的 AGENTS.md 与 AI_BOOTSTRAP.md。
+`.trim();
+
+const FEISHU_TURN_INSTRUCTIONS = `
+本 turn 来自用户本人的飞书手机端，是 AIIR 的远程入口。
 请使用简明、自然、非专业化的中文回答，并遵循仓库中的 AGENTS.md 与 AI_BOOTSTRAP.md。
-每个 turn 都会在 application context 中携带由桥接服务生成的权限声明：
+本 turn 会携带由桥接服务生成的权限声明：
 - READ_ONLY 表示只允许讨论、查询、研究和状态查看，不得修改文件；
 - WORKSPACE_WRITE 表示用户通过 /aiir write 明确授权本轮修改 AIIR 仓库文件和执行必要的本地验证。
 无论哪种模式，都不要执行 Git commit/push，不要交易，不要访问仓库以外的敏感文件，也不要触发其他不可逆外部动作。
 不要调用交互式用户输入工具；如必须确认，请在最终回复中直接提出问题。
 除非用户在当前消息中明确要求，否则不要启动子 Agent。
 `.trim();
+
+const THREAD_PERSISTENCE_MARKER = {
+  type: "message",
+  role: "assistant",
+  content: [
+    {
+      type: "output_text",
+      text: "AIIR shared thread initialized; no user request is associated with this item.",
+    },
+  ],
+};
 
 function permissionContext(writable, repoRoot) {
   if (writable) {
@@ -70,7 +87,7 @@ export class CodexSession {
           cwd: this.config.repoRoot,
           sandbox: this.config.sandbox,
           approvalPolicy: "never",
-          developerInstructions: REMOTE_INSTRUCTIONS,
+          developerInstructions: SHARED_THREAD_INSTRUCTIONS,
           excludeTurns: true,
         });
         return this.state.threadId;
@@ -84,19 +101,62 @@ export class CodexSession {
   }
 
   async newThread() {
+    const { threadId } = await this.replaceThread();
+    return threadId;
+  }
+
+  async replaceThread({ deletePrevious = false } = {}) {
     if (this.busy) {
       throw new Error("当前 Codex turn 尚未结束，不能新建 thread");
     }
+
+    const previousThreadId = this.state.threadId;
     const result = await this.rpc.request("thread/start", {
       cwd: this.config.repoRoot,
       sandbox: this.config.sandbox,
       approvalPolicy: "never",
-      developerInstructions: REMOTE_INSTRUCTIONS,
+      developerInstructions: SHARED_THREAD_INSTRUCTIONS,
       ephemeral: false,
+      ...(deletePrevious ? { sessionStartSource: "clear" } : {}),
     });
-    this.state.threadId = result.thread.id;
-    await this.persistState();
-    return this.state.threadId;
+    const newThreadId = result.thread?.id;
+    if (!newThreadId) {
+      throw new Error("Codex thread/start 未返回 thread ID");
+    }
+
+    await this.rpc.request("thread/inject_items", {
+      threadId: newThreadId,
+      items: [THREAD_PERSISTENCE_MARKER],
+    });
+
+    this.state.threadId = newThreadId;
+    try {
+      await this.persistState();
+    } catch (error) {
+      this.state.threadId = previousThreadId;
+      throw error;
+    }
+
+    let deleteError = null;
+    if (
+      deletePrevious &&
+      previousThreadId &&
+      previousThreadId !== newThreadId
+    ) {
+      try {
+        await this.rpc.request("thread/delete", {
+          threadId: previousThreadId,
+        });
+      } catch (error) {
+        deleteError = error;
+      }
+    }
+
+    return {
+      threadId: newThreadId,
+      previousThreadId,
+      deleteError,
+    };
   }
 
   async ask(text, { writable = false, timeoutMs = 15 * 60_000 } = {}) {
@@ -145,6 +205,10 @@ export class CodexSession {
           approvalPolicy: "never",
           permissions: writable ? ":workspace" : ":read-only",
           additionalContext: {
+            "aiir.feishu.source": {
+              value: FEISHU_TURN_INSTRUCTIONS,
+              kind: "application",
+            },
             "aiir.feishu.permission": permissionContext(
               writable,
               this.config.repoRoot,

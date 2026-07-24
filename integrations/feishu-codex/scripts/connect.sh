@@ -1,6 +1,22 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+mode=resume
+if (( $# > 1 )); then
+  echo "用法：$0 [--fresh]"
+  exit 2
+fi
+if (( $# == 1 )); then
+  if [[ "$1" != "--fresh" ]]; then
+    echo "不支持的参数：$1"
+    echo "用法：$0 [--fresh]"
+    exit 2
+  fi
+  mode=fresh
+fi
+
+script_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
+integration_root=$(cd -- "$script_dir/.." && pwd)
 codex_bin=$(command -v codex)
 node_bin=$(command -v node)
 user_home=$(getent passwd "$(id -u)" | cut -d: -f6)
@@ -29,23 +45,68 @@ if [[ ! -f "$state_file" ]]; then
   exit 1
 fi
 
-thread_id=$(
-  "$node_bin" -e '
-    const fs = require("node:fs");
-    const state = JSON.parse(fs.readFileSync(process.argv[1], "utf8"));
-    if (typeof state.threadId !== "string" || state.threadId.length === 0) {
-      throw new Error("状态文件中没有可恢复的 threadId");
-    }
-    process.stdout.write(state.threadId);
-  ' "$state_file"
-)
-
-if ! systemctl --user start \
-  aiir-codex-app-server.service \
-  aiir-feishu-codex.service; then
-  echo "无法启动飞书桥服务。请先运行 integrations/feishu-codex/scripts/setup.sh。"
+if ! systemctl --user start aiir-codex-app-server.service; then
+  echo "无法启动 Codex app-server。请先运行 integrations/feishu-codex/scripts/setup.sh。"
   exit 1
 fi
 
+bridge_needs_start=0
+restore_bridge() {
+  if (( bridge_needs_start )); then
+    systemctl --user start aiir-feishu-codex.service >/dev/null 2>&1 || true
+  fi
+}
+trap restore_bridge EXIT
+
+if [[ "$mode" == "fresh" ]]; then
+  if ! systemctl --user stop aiir-feishu-codex.service; then
+    echo "无法暂停飞书桥，未开始切换 thread。"
+    exit 1
+  fi
+  bridge_needs_start=1
+  if ! "$node_bin" --env-file="$environment_file" \
+    "$integration_root/src/reset-thread.mjs" \
+    >/dev/null; then
+    echo "无法创建新 thread；飞书桥将恢复启动。"
+    exit 1
+  fi
+  if ! systemctl --user start aiir-feishu-codex.service; then
+    echo "新 thread 已保存，但飞书桥启动失败，请运行 doctor.sh 检查。"
+    exit 1
+  fi
+  bridge_needs_start=0
+  echo "已切换到新 thread，并已请求删除旧 thread"
+else
+  if ! systemctl --user restart aiir-feishu-codex.service; then
+    echo "无法重启飞书桥服务。请运行 integrations/feishu-codex/scripts/doctor.sh 检查。"
+    exit 1
+  fi
+fi
+
+if ! thread_id=$(
+  "$node_bin" --env-file="$environment_file" \
+    "$integration_root/src/wait-thread.mjs"
+); then
+  echo "飞书桥已启动，但没有得到可恢复的 Codex thread。"
+  echo "请运行 integrations/feishu-codex/scripts/doctor.sh 检查。"
+  exit 1
+fi
+
+trap - EXIT
+
+if "$node_bin" --env-file="$environment_file" \
+  "$integration_root/src/notify.mjs" \
+  "AIIR 飞书桥已连接，本机 Codex 正在接入同一会话。" \
+  >/dev/null 2>&1; then
+  echo "飞书主动通知测试成功"
+else
+  echo "提示：飞书主动通知测试未完成，不影响终端接入。"
+  echo "如果尚未建立通知目标，请先用已授权账号私聊机器人一次。"
+fi
+
 echo "正在接入飞书使用的 Codex thread：$thread_id"
-exec "$codex_bin" --ask-for-approval never resume "$thread_id" --remote "$app_server_url"
+exec "$codex_bin" \
+  --ask-for-approval never \
+  --sandbox workspace-write \
+  resume "$thread_id" \
+  --remote "$app_server_url"

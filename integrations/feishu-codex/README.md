@@ -97,21 +97,29 @@ journalctl --user -u aiir-feishu-codex.service -f
 
 ## 四、让终端接入同一条会话
 
-在飞书发送 `/aiir thread`，机器人会返回 thread ID 和完整命令，形式如下：
-
-```bash
-codex resume THREAD_ID --remote ws://127.0.0.1:4500
-```
-
-飞书和这个终端连接的是同一个 app-server/thread，不是模拟键盘输入。当前已经单独启动的旧 Codex 窗口不会自动热切换；执行上述命令打开的新终端会话才与飞书共享上下文。
-
-也可以直接在仓库根目录运行：
+恢复当前 thread：
 
 ```bash
 bash integrations/feishu-codex/scripts/connect.sh
 ```
 
-该脚本会启动已经安装的用户服务，从本机私密状态中读取当前 thread ID，然后让终端接入飞书正在使用的同一条会话。
+明确删除旧 thread 并从空白会话开始：
+
+```bash
+bash integrations/feishu-codex/scripts/connect.sh --fresh
+```
+
+普通模式会重启飞书桥、等待状态中的 thread 通过 app-server 的实际恢复检查，再发送一条主动通知测试。若原 ID 没有可恢复的 rollout，桥会先创建并持久化新 thread，连接脚本会等待状态切换完成，不会继续使用旧 ID。
+
+`--fresh` 会先暂停飞书桥，创建并持久化新 thread，确认成功后保存新 ID，再通过 app-server 的 `thread/delete` 删除旧 thread；随后连接脚本同样等待新 ID 通过实际恢复检查，再让飞书桥和本机终端共同切换过去。新 thread 无法持久化或状态保存失败时不会删除旧 thread；旧 thread 删除请求本身失败时会明确警告，但仍使用已经持久化的新 thread。不要在飞书仍有任务处理中时使用 `--fresh`。
+
+无论是否使用 `--fresh`，本机终端都以 `--ask-for-approval never --sandbox workspace-write` 接入，只允许在 AIIR 工作区内直接读写且不弹交互审批。飞书权限保持独立：普通飞书消息仍是只读，只有 `/aiir write` 才为对应一轮开放工作区写权限。
+
+`--fresh` 只更换 Codex thread，不会清除已配对飞书账号或私聊通知目标，因此同一台机器上手机端通常不需要操作。只有尚未建立通知目标时，才需要用已授权账号私聊机器人一次。
+
+本机终端打开并连接同一 thread 时，可以看到之后由飞书发起的消息和最终回答；飞书桥只把自己发起的 turn 的最终回答返回飞书，不会把本机终端中的普通对话、推理过程、工具调用或中间输出主动转发到飞书。
+
+在飞书发送 `/aiir thread`，机器人也会返回当前 thread ID 和带有本机读写权限的完整接入命令。当前已经单独启动的旧 Codex 窗口不会自动热切换；新打开的终端会话才与飞书共享上下文。
 
 ## 五、退出、重启与恢复
 
@@ -119,6 +127,7 @@ bash integrations/feishu-codex/scripts/connect.sh
 - 桥接服务重启后会读取本机状态文件并恢复原 thread；如果原 thread 确实无法恢复，才会新建 thread 并保存新 ID。
 - 电脑重启后，已启用的用户服务会在该用户登录后自动启动。若电脑关机、休眠或尚未登录，飞书入口不会在线。
 - 普通执行 `codex` 会打开另一条本地会话，不会自动接入飞书 thread。要共享上下文，请运行 `bash integrations/feishu-codex/scripts/connect.sh`，或使用 `/aiir thread` 返回的完整命令。
+- 普通 `connect.sh` 恢复原 thread；只有显式 `--fresh` 才主动创建新 thread 并请求删除旧 thread。原 thread 无法恢复时，桥仍会自动切换到已持久化的新 thread；连接脚本会等待最终 ID 真正可恢复后再启动终端。两种模式都保持 Codex app-server 运行，并以本机工作区读写权限启动终端。
 - 仓库只保存程序、服务模板和说明。App Secret、配对码、已授权用户、私聊通知目标和 thread ID 故意保存在本机，不进入 Git。
 - 状态格式升级到版本 2 后，旧版 `lastChatId` 不会自动继承为通知目标。升级后请用已授权账号私聊机器人一次，再使用主动通知；这是为了避免旧群聊被静默当成通知目标。
 - 因此，同一台机器退出窗口或重启后可以恢复；换新机器或只重新克隆仓库时，需要重新运行 `scripts/setup.sh`、完成配对并建立本机状态，不能只靠 Git 中的文件恢复私密连接。
