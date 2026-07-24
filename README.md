@@ -103,6 +103,8 @@ AIIR/
 ├── MEMORY.md
 ├── JOURNAL.md
 ├── CHANGELOG.md
+├── journal/
+│   └── 2026-07.md
 ├── portfolio/
 │   ├── README.md
 │   ├── CURRENT.md
@@ -136,7 +138,8 @@ AIIR/
 
 - [`CURRENT_STATE.md`](CURRENT_STATE.md)：当前有效的目标、问题、缺口和下一步。
 - [`MEMORY.md`](MEMORY.md)：经过确认、未来仍会影响协作的长期用户信息。
-- [`JOURNAL.md`](JOURNAL.md)：按时间追加的重要讨论、决定和复盘记录。
+- [`JOURNAL.md`](JOURNAL.md)：重要历史的简短索引；启动时只读取该索引。
+- [`journal/`](journal/)：按月保存的重要讨论、决定和复盘正文，只在当前任务需要时读取。
 - [`portfolio/CURRENT.md`](portfolio/CURRENT.md)：用户授权保存的最新已知持仓与账户快照。
 - [`portfolio/snapshots/`](portfolio/snapshots/)：按日期保存的历史持仓快照，用于跨会话恢复与复盘。
 
