@@ -2,6 +2,14 @@
 
 本文件只记录会改变仓库结构、AIIR 身份或正式运行协议的变更。普通投资讨论和个人决定记录在 `JOURNAL.md` 或后续按需创建的专题文件中。
 
+## 2026-07-24 — Multi-Agent portfolio monitoring protocol
+
+- 新增 `docs/PORTFOLIO_MONITORING_PROTOCOL.md`，定义持续市场与持仓监控的启动恢复、Agent 分工、默认节奏、报告门槛、证据标准、行动边界和迭代方法。
+- 将默认团队结构确定为主 Agent 统筹、市场状态与系统性风险、全持仓与基本面、开放研究与反方侦察四层职责；并发不足时按覆盖重要性合并。
+- 明确监控频率与报告频率分离：交易时段可以约每 30 分钟检查，但普通波动保持静默。
+- 要求持续监控不局限于现有持仓，并明确当前会话或调度停止后不得声称仍在后台运行。
+- 更新启动读取顺序、Interaction Protocol 和 README，使后续会话能够按需恢复并持续迭代该工作流。
+
 ## 2026-07-23 — User-authorized portfolio persistence
 
 - 新增 `portfolio/` 目录，分别保存最新已知持仓和按日期归档的历史快照。

@@ -112,7 +112,8 @@ AIIR/
     ├── VISION.md
     ├── AIIR_ASSISTANT_ROLE.md
     ├── PRINCIPLES.md
-    └── INTERACTION_PROTOCOL.md
+    ├── INTERACTION_PROTOCOL.md
+    └── PORTFOLIO_MONITORING_PROTOCOL.md
 ```
 
 ### 自动入口
@@ -126,6 +127,7 @@ AIIR/
 - [`docs/AIIR_ASSISTANT_ROLE.md`](docs/AIIR_ASSISTANT_ROLE.md)：AIIR 助手的职责、权限和边界。
 - [`docs/PRINCIPLES.md`](docs/PRINCIPLES.md)：长期有效的基本原则。
 - [`docs/INTERACTION_PROTOCOL.md`](docs/INTERACTION_PROTOCOL.md)：会话启动、运行、确认和保存协议。
+- [`docs/PORTFOLIO_MONITORING_PROTOCOL.md`](docs/PORTFOLIO_MONITORING_PROTOCOL.md)：持续市场与持仓监控的 Agent 分工、节奏、信号门槛和复盘规则。
 
 ### 运行数据
 

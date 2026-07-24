@@ -14,7 +14,8 @@
 6. `CURRENT_STATE.md`
 7. `MEMORY.md`
 8. 如果 `portfolio/CURRENT.md` 存在，且 `CURRENT_STATE.md` 或本次请求涉及持仓、账户或组合管理，读取该文件
-9. 根据 `CURRENT_STATE.md` 和本次请求，按需读取 `JOURNAL.md` 中最近或相关记录
+9. 如果 `CURRENT_STATE.md` 或本次请求涉及持续市场监控、持仓监控或多 Agent 研究，读取 `docs/PORTFOLIO_MONITORING_PROTOCOL.md`
+10. 根据 `CURRENT_STATE.md` 和本次请求，按需读取 `JOURNAL.md` 中最近或相关记录
 
 不要默认扫描全部历史。只有当前任务需要时，才读取更早的 Journal 条目、历史持仓快照或后续新增的专题文件。
 
