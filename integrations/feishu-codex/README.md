@@ -3,7 +3,7 @@
 这个桥让手机飞书成为 AIIR 的安全远程入口：
 
 ```text
-飞书私聊或群聊 @机器人
+飞书私聊，或白名单群聊 @机器人
 → 飞书长连接
 → 本机桥接服务
 → Codex app-server
@@ -11,17 +11,20 @@
 → 回复飞书
 ```
 
-它还提供一个单向通知命令，可让市场监控在出现重要变化时主动推送到最近完成配对的飞书会话。
+它还提供一个单向通知命令，可让市场监控在出现重要变化时主动推送到最近一次已授权私聊。主动通知不会以群聊作为目标。
 
 ## 安全边界
 
 - 飞书凭证、配对码和用户 ID 只放在本机配置，不进入 Git；
-- 首次使用必须在私聊中输入配对码，之后只接受已绑定账号；
-- 群聊默认必须 `@机器人`；
-- 普通飞书消息使用 `read-only`；只有显式 `/aiir write` 才为当前一轮使用 `workspace-write`；
+- 首次使用必须在私聊中输入配对码；配对码默认只允许完成第一次绑定，之后只接受已绑定账号或本机显式配置的 open ID；
+- 群聊默认关闭；只有 `FEISHU_ALLOWED_GROUP_CHAT_IDS` 中的群可在 `@机器人` 后使用，并且只开放 `help`、`status` 和只读 `ask`；
+- 全局沙箱强制保持 `read-only`；只有显式 `/aiir write` 才为当前一轮使用 `workspace-write`；
 - 写权限只覆盖 AIIR 工作区，下一条普通消息自动恢复只读；
-- 远程入口不执行交易，不做 Git commit/push，不处理交互式审批；
-- `codex app-server` 只监听 `127.0.0.1`，不能直接暴露到公网。
+- `CODEX_APP_SERVER_URL` 会在启动时校验，只允许无凭证的本机回环 `ws://127.0.0.1`、`localhost` 或 `::1` 地址；
+- 飞书事件按 message ID 轻量去重：写任务先登记以避免重复执行，只读任务成功后登记以便临时失败时重试；
+- 主动通知只发送到最近一次已授权私聊；群聊不会覆盖通知目标；
+- 飞书 SDK 只记录警告和错误；常见凭证与会话标识会被清理，启动日志不打印 thread ID，聊天错误不回显底层异常详情；
+- 远程入口不执行交易，不做 Git commit/push，不处理交互式审批。
 
 ## 一、在飞书开放平台创建应用
 
@@ -53,6 +56,16 @@ bash scripts/setup.sh
 bash scripts/doctor.sh
 ```
 
+`doctor.sh` 检查当前机器的私密文件权限、只读基线、回环地址、服务安装与运行状态以及 app-server 健康状态；它不会显示密钥、配对码或用户标识。
+
+仓库更新或依赖变化后，同时执行：
+
+```bash
+npm run check
+npm test
+npm audit --omit=dev
+```
+
 如需看详细日志：
 
 ```bash
@@ -67,7 +80,7 @@ journalctl --user -u aiir-feishu-codex.service -f
 /aiir pair 你在配置文件里设置的配对码
 ```
 
-成功后可直接发自然语言，也可使用：
+成功后配对入口自动关闭。需要增加其他账号时，应在本机私密配置中明确加入对应 open ID，而不是重复共享配对码。随后可直接发自然语言，也可使用：
 
 ```text
 /aiir help
@@ -78,7 +91,7 @@ journalctl --user -u aiir-feishu-codex.service -f
 /aiir write 更新今天的研究记录并检查格式
 ```
 
-群聊中需要先 `@机器人`。
+群聊默认不可用。确需启用时，在本机私密配置中把明确的 `chat_id` 加入 `FEISHU_ALLOWED_GROUP_CHAT_IDS`，重启桥接服务后再 `@机器人`。即使进入白名单，群聊仍然只能查看帮助、状态和发送只读问题；配对、thread ID、新建会话与写任务必须在私聊中完成。
 
 `/aiir write` 是逐轮授权。它允许 Codex 在 AIIR 仓库内修改文件并执行必要的本地验证，但不允许 Git commit/push、交易或仓库外的破坏性操作。需要继续修改时，每一条新任务都要再次使用 `/aiir write`。
 
@@ -106,12 +119,13 @@ bash integrations/feishu-codex/scripts/connect.sh
 - 桥接服务重启后会读取本机状态文件并恢复原 thread；如果原 thread 确实无法恢复，才会新建 thread 并保存新 ID。
 - 电脑重启后，已启用的用户服务会在该用户登录后自动启动。若电脑关机、休眠或尚未登录，飞书入口不会在线。
 - 普通执行 `codex` 会打开另一条本地会话，不会自动接入飞书 thread。要共享上下文，请运行 `bash integrations/feishu-codex/scripts/connect.sh`，或使用 `/aiir thread` 返回的完整命令。
-- 仓库只保存程序、服务模板和说明。App Secret、配对码、已授权用户、最近聊天和 thread ID 故意保存在本机，不进入 Git。
+- 仓库只保存程序、服务模板和说明。App Secret、配对码、已授权用户、私聊通知目标和 thread ID 故意保存在本机，不进入 Git。
+- 状态格式升级到版本 2 后，旧版 `lastChatId` 不会自动继承为通知目标。升级后请用已授权账号私聊机器人一次，再使用主动通知；这是为了避免旧群聊被静默当成通知目标。
 - 因此，同一台机器退出窗口或重启后可以恢复；换新机器或只重新克隆仓库时，需要重新运行 `scripts/setup.sh`、完成配对并建立本机状态，不能只靠 Git 中的文件恢复私密连接。
 
 ## 六、主动发送一条通知
 
-完成首次配对后：
+完成首次配对并由已授权账号私聊至少一次后：
 
 ```bash
 cd /home/admin/AIIR/integrations/feishu-codex
@@ -127,7 +141,33 @@ some_monitor_command | node \
   src/notify.mjs --stdin
 ```
 
-只有达到监控协议中的报告门槛时，才应调用这个通知命令。
+只有达到监控协议中的报告门槛时，才应调用这个通知命令。通知目标始终是最近一次已授权私聊，不会发往群聊。
+
+## 七、仓库审计与本机验证边界
+
+仓库级审计可以检查代码、配置模板、锁定依赖和测试，但不能代替对实际运行机器的检查。仅凭 README 或仓库代码，不得宣称本机环境已经安全验证。
+
+应用本次安全更新后，至少在运行机器执行：
+
+```bash
+cd /home/admin/AIIR/integrations/feishu-codex
+npm run check
+npm test
+npm audit --omit=dev
+bash scripts/doctor.sh
+systemctl --user status aiir-codex-app-server.service --no-pager
+systemctl --user status aiir-feishu-codex.service --no-pager
+```
+
+还应人工确认：
+
+- 私密配置和状态文件权限为 `600`，所在目录权限为 `700`；
+- app-server 只监听本机回环地址；
+- 日志中没有 App Secret、配对码、chat ID、open ID 或 thread ID；
+- 群聊变量默认留空，只有确有需要的群才加入白名单；
+- `npm audit`、服务状态或实际日志发现的问题已经单独处理。
+
+当前锁定的 `ws` 版本为 8.21.1，已高于已知拒绝服务问题的修复版本 8.21.0；这只说明仓库锁定版本不落在该已知受影响范围内，不证明运行机器已经安装同一依赖树。
 
 ## 提交前检查
 

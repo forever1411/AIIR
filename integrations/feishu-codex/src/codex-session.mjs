@@ -1,3 +1,5 @@
+import { safeErrorMessage } from "./safe-log.mjs";
+
 const REMOTE_INSTRUCTIONS = `
 本 turn 来自用户本人的飞书手机端，是 AIIR 的远程讨论入口。
 请使用简明、自然、非专业化的中文回答，并遵循仓库中的 AGENTS.md 与 AI_BOOTSTRAP.md。
@@ -73,7 +75,9 @@ export class CodexSession {
         });
         return this.state.threadId;
       } catch (error) {
-        console.warn(`无法恢复旧 thread，将新建：${error.message}`);
+        console.warn(
+          `无法恢复旧 thread，将新建：${safeErrorMessage(error)}`,
+        );
       }
     }
     return this.newThread();
@@ -115,7 +119,9 @@ export class CodexSession {
                 turnId: timedOut.turnId,
               });
             } catch (error) {
-              console.warn(`中断超时 turn 失败：${error.message}`);
+              console.warn(
+                `中断超时 turn 失败：${safeErrorMessage(error)}`,
+              );
             }
           }
         }

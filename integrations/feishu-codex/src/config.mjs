@@ -16,6 +16,28 @@ function required(name) {
   return value;
 }
 
+export function assertLocalAppServerUrl(value) {
+  let parsed;
+  try {
+    parsed = new URL(value);
+  } catch {
+    throw new Error("CODEX_APP_SERVER_URL 必须是有效的 WebSocket URL");
+  }
+
+  const loopbackHosts = new Set(["127.0.0.1", "localhost", "[::1]"]);
+  if (
+    parsed.protocol !== "ws:" ||
+    !loopbackHosts.has(parsed.hostname) ||
+    parsed.username ||
+    parsed.password
+  ) {
+    throw new Error(
+      "CODEX_APP_SERVER_URL 只能使用无凭证的本机 ws://127.0.0.1、localhost 或 ::1 地址",
+    );
+  }
+  return value;
+}
+
 function csv(value) {
   return new Set(
     (value ?? "")
@@ -27,9 +49,9 @@ function csv(value) {
 
 export function loadConfig() {
   const sandbox = (process.env.FEISHU_CODEX_SANDBOX ?? "read-only").trim();
-  if (!["read-only", "workspace-write"].includes(sandbox)) {
+  if (sandbox !== "read-only") {
     throw new Error(
-      "FEISHU_CODEX_SANDBOX 只能是 read-only 或 workspace-write",
+      "FEISHU_CODEX_SANDBOX 必须保持 read-only；写权限只能通过 /aiir write 逐轮开放",
     );
   }
 
@@ -51,8 +73,10 @@ export function loadConfig() {
     appSecret: required("FEISHU_APP_SECRET"),
     pairingCode: process.env.FEISHU_PAIRING_CODE?.trim() || null,
     allowedOpenIds: csv(process.env.FEISHU_ALLOWED_OPEN_IDS),
-    appServerUrl:
+    allowedGroupChatIds: csv(process.env.FEISHU_ALLOWED_GROUP_CHAT_IDS),
+    appServerUrl: assertLocalAppServerUrl(
       process.env.CODEX_APP_SERVER_URL?.trim() || "ws://127.0.0.1:4500",
+    ),
     repoRoot,
     statePath,
     sandbox,

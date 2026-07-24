@@ -5,7 +5,13 @@ import {
 import { loadConfig } from "./config.mjs";
 import { CodexRpcClient } from "./codex-rpc.mjs";
 import { CodexSession } from "./codex-session.mjs";
-import { HELP_TEXT, pairingMatches, parseCommand } from "./commands.mjs";
+import {
+  HELP_TEXT,
+  isGroupSafeCommand,
+  pairingMatches,
+  parseCommand,
+} from "./commands.mjs";
+import { safeErrorMessage, safeLogText } from "./safe-log.mjs";
 import { loadState, saveState } from "./state.mjs";
 
 const config = loadConfig();
@@ -14,10 +20,10 @@ const persistState = () => saveState(config.statePath, state);
 const rpc = new CodexRpcClient(config.appServerUrl);
 
 rpc.on("transportError", (error) => {
-  console.error(`Codex 连接错误：${error.message}`);
+  console.error(`Codex 连接错误：${safeErrorMessage(error)}`);
 });
 rpc.on("protocolError", (error) => {
-  console.error(`Codex 协议错误：${error.message}`);
+  console.error(`Codex 协议错误：${safeErrorMessage(error)}`);
 });
 
 await rpc.connect();
@@ -27,7 +33,7 @@ await session.initializeThread();
 const channel = createLarkChannel({
   appId: config.appId,
   appSecret: config.appSecret,
-  loggerLevel: LoggerLevel.info,
+  loggerLevel: LoggerLevel.warn,
   policy: {
     requireMention: true,
     dmMode: "open",
@@ -40,6 +46,25 @@ const authorizedOpenIds = new Set([
   ...state.pairedOpenIds,
 ]);
 let queue = Promise.resolve();
+
+function isPrivateMessage(message) {
+  return message.chatType === "p2p";
+}
+
+async function enforceChatPolicy(message, command) {
+  if (isPrivateMessage(message)) {
+    return true;
+  }
+  if (!config.allowedGroupChatIds.has(message.chatId)) {
+    console.warn("忽略未列入白名单的群聊消息");
+    return false;
+  }
+  if (!isGroupSafeCommand(command.name)) {
+    await reply(message, "群聊只允许 help、status 和只读 ask；请在私聊中使用其他命令。");
+    return false;
+  }
+  return true;
+}
 
 function terminalCommand() {
   return `codex resume ${session.threadId} --remote ${config.appServerUrl}`;
@@ -61,11 +86,12 @@ async function authorize(message, command) {
   if (
     message.chatType === "p2p" &&
     command.name === "pair" &&
+    authorizedOpenIds.size === 0 &&
     pairingMatches(config.pairingCode, command.argument)
   ) {
     authorizedOpenIds.add(message.senderId);
     state.pairedOpenIds = [...authorizedOpenIds];
-    state.lastChatId = message.chatId;
+    state.notificationChatId = message.chatId;
     await persistState();
     await reply(
       message,
@@ -82,8 +108,10 @@ async function authorize(message, command) {
 }
 
 async function handleAuthorized(message, command) {
-  state.lastChatId = message.chatId;
-  await persistState();
+  if (isPrivateMessage(message) && state.notificationChatId !== message.chatId) {
+    state.notificationChatId = message.chatId;
+    await persistState();
+  }
 
   switch (command.name) {
     case "help":
@@ -94,10 +122,14 @@ async function handleAuthorized(message, command) {
         message,
         [
           "AIIR 飞书桥：在线",
-          `Codex thread：${session.threadId}`,
+          ...(isPrivateMessage(message)
+            ? [`Codex thread：${session.threadId}`]
+            : ["群聊模式：只读，不显示 thread 标识"]),
           `当前状态：${session.busy ? "处理中" : "空闲"}`,
           "默认权限：只读讨论",
-          "按轮写入：使用 /aiir write，仅限 AIIR 仓库",
+          ...(isPrivateMessage(message)
+            ? ["按轮写入：使用 /aiir write，仅限 AIIR 仓库"]
+            : []),
         ].join("\n"),
       );
       return;
@@ -147,31 +179,51 @@ async function handleAuthorized(message, command) {
 }
 
 async function handleMessage(message) {
+  const messageId = message.messageId;
+  if (messageId && state.recentMessageIds.includes(messageId)) {
+    return;
+  }
+
   const command = parseCommand(message.content);
+  if (!(await enforceChatPolicy(message, command))) {
+    return;
+  }
   if (!(await authorize(message, command))) {
     return;
   }
+
+  const reserveBeforeHandling = command.name === "write";
+  if (messageId && reserveBeforeHandling) {
+    state.recentMessageIds = [...state.recentMessageIds, messageId].slice(-200);
+    await persistState();
+  }
   await handleAuthorized(message, command);
+  if (messageId && !reserveBeforeHandling) {
+    state.recentMessageIds = [...state.recentMessageIds, messageId].slice(-200);
+    await persistState();
+  }
 }
 
 channel.on("message", (message) => {
   queue = queue
     .then(() => handleMessage(message))
     .catch(async (error) => {
-      console.error(error);
+      console.error(`处理飞书消息失败：${safeErrorMessage(error)}`);
       try {
-        await reply(message, `处理失败：${error.message}`);
+        await reply(message, "处理失败，详细信息已写入本机日志。");
       } catch (replyError) {
-        console.error(`发送错误回复失败：${replyError.message}`);
+        console.error(
+          `发送错误回复失败：${safeErrorMessage(replyError)}`,
+        );
       }
     });
 });
 
 channel.on("reject", (event) => {
-  console.warn(`飞书消息被策略拒绝：${event.reason}`);
+  console.warn(`飞书消息被策略拒绝：${safeLogText(event.reason)}`);
 });
 channel.on("error", (error) => {
-  console.error(`飞书入站错误：${error.message}`);
+  console.error(`飞书入站错误：${safeErrorMessage(error)}`);
 });
 channel.on("reconnecting", () => {
   console.warn("飞书长连接正在重连");
@@ -182,7 +234,7 @@ channel.on("reconnected", () => {
 
 await channel.connect();
 console.info(
-  `AIIR 飞书桥已启动，thread=${session.threadId}，sandbox=${config.sandbox}`,
+  `AIIR 飞书桥已启动，sandbox=${config.sandbox}，允许群聊数=${config.allowedGroupChatIds.size}`,
 );
 
 let shuttingDown = false;
@@ -195,7 +247,7 @@ async function shutdown(reason, exitCode = 0) {
   try {
     await channel.disconnect();
   } catch (error) {
-    console.error(`停止飞书连接失败：${error.message}`);
+    console.error(`停止飞书连接失败：${safeErrorMessage(error)}`);
   }
   rpc.close();
   process.exit(exitCode);

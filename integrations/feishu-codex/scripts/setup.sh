@@ -50,6 +50,7 @@ chmod 600 "$environment_tmp"
   printf 'FEISHU_APP_SECRET=%s\n' "$app_secret"
   printf 'FEISHU_PAIRING_CODE=%s\n' "$pairing_code"
   printf 'FEISHU_ALLOWED_OPEN_IDS=\n'
+  printf 'FEISHU_ALLOWED_GROUP_CHAT_IDS=\n'
   printf 'CODEX_APP_SERVER_URL=ws://127.0.0.1:4500\n'
   printf 'AIIR_REPO_ROOT=%s\n' "$repo_root"
   printf 'FEISHU_CODEX_SANDBOX=read-only\n'

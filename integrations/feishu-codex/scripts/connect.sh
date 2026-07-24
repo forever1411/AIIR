@@ -48,4 +48,4 @@ if ! systemctl --user start \
 fi
 
 echo "正在接入飞书使用的 Codex thread：$thread_id"
-exec "$codex_bin" resume "$thread_id" --remote "$app_server_url"
+exec "$codex_bin" --ask-for-approval never resume "$thread_id" --remote "$app_server_url"

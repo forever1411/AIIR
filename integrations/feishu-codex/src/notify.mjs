@@ -22,8 +22,8 @@ const text = useStdin
 if (!text) {
   throw new Error("用法：npm run notify -- \"通知内容\"，或加 --stdin 从标准输入读取");
 }
-if (!state.lastChatId) {
-  throw new Error("还没有可通知的 chat_id，请先在飞书中完成配对并发一条消息");
+if (!state.notificationChatId) {
+  throw new Error("还没有私聊通知目标，请先用已授权账号私聊机器人发一条消息");
 }
 
 const client = new lark.Client({
@@ -37,7 +37,7 @@ const client = new lark.Client({
 await client.im.v1.message.create({
   params: { receive_id_type: "chat_id" },
   data: {
-    receive_id: state.lastChatId,
+    receive_id: state.notificationChatId,
     content: JSON.stringify({ text }),
     msg_type: "text",
   },
