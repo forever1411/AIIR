@@ -11,6 +11,13 @@ import {
   pairingMatches,
   parseCommand,
 } from "./commands.mjs";
+import {
+  DEFAULT_MARKDOWN_CHUNK_LIMIT,
+  DEFAULT_SLOW_RESPONSE_MS,
+  ReplyDeliveryError,
+  sendMarkdownReply,
+  waitForTurnOrSlow,
+} from "./delivery.mjs";
 import { safeErrorMessage, safeLogText } from "./safe-log.mjs";
 import { loadState, saveState } from "./state.mjs";
 
@@ -34,6 +41,9 @@ const channel = createLarkChannel({
   appId: config.appId,
   appSecret: config.appSecret,
   loggerLevel: LoggerLevel.warn,
+  outbound: {
+    textChunkLimit: DEFAULT_MARKDOWN_CHUNK_LIMIT,
+  },
   policy: {
     requireMention: true,
     dmMode: "open",
@@ -46,6 +56,7 @@ const authorizedOpenIds = new Set([
   ...state.pairedOpenIds,
 ]);
 let queue = Promise.resolve();
+const backgroundDeliveries = new Set();
 
 function isPrivateMessage(message) {
   return message.chatType === "p2p";
@@ -71,11 +82,55 @@ function terminalCommand() {
 }
 
 async function reply(message, text) {
-  await channel.send(
-    message.chatId,
-    { markdown: text },
-    { replyTo: message.messageId },
-  );
+  await sendMarkdownReply(channel, message, text);
+}
+
+function partialDeliveryText(error) {
+  return [
+    `这条回复共 ${error.totalChunks} 段，已成功发送 ${error.sentChunks} 段，后续分段发送失败。`,
+    "桥接已停止继续发送，避免产生重复内容；详细错误已写入本机日志。",
+  ].join("\n");
+}
+
+async function reportFailure(message, error, fallbackText) {
+  console.error(`发送或处理飞书回复失败：${safeErrorMessage(error)}`);
+  const text =
+    error instanceof ReplyDeliveryError && error.sentChunks > 0
+      ? partialDeliveryText(error)
+      : fallbackText;
+  try {
+    await reply(message, text);
+  } catch (replyError) {
+    console.error(`发送错误提示失败：${safeErrorMessage(replyError)}`);
+  }
+}
+
+function trackLateDelivery(
+  message,
+  completion,
+  { after = Promise.resolve() } = {},
+) {
+  const delivery = Promise.resolve(after)
+    .catch((error) => {
+      console.error(`发送慢响应提醒失败：${safeErrorMessage(error)}`);
+    })
+    .then(() => completion)
+    .then(async (outcome) => {
+      if (outcome.kind === "error") {
+        throw outcome.error;
+      }
+      await reply(message, outcome.answer);
+    })
+    .catch((error) =>
+      reportFailure(
+        message,
+        error,
+        "这项任务在继续处理后最终失败，详细信息已写入本机日志。",
+      ),
+    );
+
+  backgroundDeliveries.add(delivery);
+  void delivery.finally(() => backgroundDeliveries.delete(delivery));
 }
 
 async function authorize(message, command) {
@@ -168,14 +223,49 @@ async function handleAuthorized(message, command) {
   }
 
   const writable = command.name === "write";
+  if (session.busy) {
+    await reply(
+      message,
+      "上一条任务仍在处理中，完成后会自动补发最终答案。请稍后再发送新的研究或修改任务；help 和 status 仍可使用。",
+    );
+    return;
+  }
   await reply(
     message,
     writable
       ? "收到。本轮已开放 AIIR 仓库写权限，正在执行；不会 commit 或 push……"
       : "收到，正在以只读模式交给 AIIR 分析……",
   );
-  const answer = await session.ask(command.argument, { writable });
-  await reply(message, answer);
+  const result = await waitForTurnOrSlow(
+    session.ask(command.argument, { writable }),
+    DEFAULT_SLOW_RESPONSE_MS,
+  );
+
+  if (!result.slow) {
+    if (result.outcome.kind === "error") {
+      throw result.outcome.error;
+    }
+    try {
+      await reply(message, result.outcome.answer);
+    } catch (error) {
+      if (
+        error instanceof ReplyDeliveryError &&
+        error.sentChunks > 0
+      ) {
+        await reportFailure(message, error, partialDeliveryText(error));
+        return;
+      }
+      throw error;
+    }
+    return;
+  }
+
+  const slowNotice = reply(
+    message,
+    "本轮处理已超过 15 分钟，任务仍在继续。完成后我会把最终答案自动补发到这里，无需重新提问。",
+  );
+  trackLateDelivery(message, result.completion, { after: slowNotice });
+  await slowNotice;
 }
 
 async function handleMessage(message) {
@@ -209,13 +299,11 @@ channel.on("message", (message) => {
     .then(() => handleMessage(message))
     .catch(async (error) => {
       console.error(`处理飞书消息失败：${safeErrorMessage(error)}`);
-      try {
-        await reply(message, "处理失败，详细信息已写入本机日志。");
-      } catch (replyError) {
-        console.error(
-          `发送错误回复失败：${safeErrorMessage(replyError)}`,
-        );
-      }
+      await reportFailure(
+        message,
+        error,
+        "处理失败，详细信息已写入本机日志。",
+      );
     });
 });
 

@@ -159,7 +159,7 @@ export class CodexSession {
     };
   }
 
-  async ask(text, { writable = false, timeoutMs = 15 * 60_000 } = {}) {
+  async ask(text, { writable = false } = {}) {
     if (!this.state.threadId) {
       await this.initializeThread();
     }
@@ -168,33 +168,12 @@ export class CodexSession {
     }
 
     return new Promise(async (resolve, reject) => {
-      const timer = setTimeout(async () => {
-        const timedOut = this.pendingTurn;
-        if (timedOut) {
-          this.pendingTurn = null;
-          if (timedOut.turnId) {
-            try {
-              await this.rpc.request("turn/interrupt", {
-                threadId: timedOut.threadId,
-                turnId: timedOut.turnId,
-              });
-            } catch (error) {
-              console.warn(
-                `中断超时 turn 失败：${safeErrorMessage(error)}`,
-              );
-            }
-          }
-        }
-        reject(new Error("Codex 本轮处理超过 15 分钟，已停止等待回复"));
-      }, timeoutMs);
-
       this.pendingTurn = {
         threadId: this.state.threadId,
         turnId: null,
         finalText: null,
         resolve,
         reject,
-        timer,
       };
 
       try {
@@ -219,7 +198,6 @@ export class CodexSession {
           this.pendingTurn.turnId = result.turn.id;
         }
       } catch (error) {
-        clearTimeout(timer);
         this.pendingTurn = null;
         reject(error);
       }
@@ -255,7 +233,6 @@ export class CodexSession {
       method === "turn/completed" &&
       (!pending.turnId || params.turn?.id === pending.turnId)
     ) {
-      clearTimeout(pending.timer);
       this.pendingTurn = null;
       const status = params.turn?.status;
       if (status === "completed") {

@@ -97,6 +97,30 @@ test("write permission applies to one turn and the next turn resets read-only", 
   );
 });
 
+test("a long-running turn remains pending until its late final answer arrives", async () => {
+  const rpc = new FakeRpc();
+  const state = { threadId: "thread-1" };
+  const session = new CodexSession({
+    rpc,
+    config: { repoRoot: "/workspace", sandbox: "read-only" },
+    state,
+    persistState: async () => {},
+  });
+
+  const answer = session.ask("执行较长的研究");
+  await new Promise((resolve) => setTimeout(resolve, 20));
+
+  assert.equal(session.busy, true);
+  assert.equal(
+    rpc.requests.some(({ method }) => method === "turn/interrupt"),
+    false,
+  );
+
+  await completeTurn(rpc, "thread-1", "turn-1", "迟到的最终答案");
+  assert.equal(await answer, "迟到的最终答案");
+  assert.equal(session.busy, false);
+});
+
 test("initializeThread resumes the persisted thread with source-neutral instructions", async () => {
   const state = { threadId: "thread-existing" };
   let persistCount = 0;
